@@ -1,4 +1,3 @@
-local helpers = require("nu-ls.helpers")
 local types = require("nu-ls.types")
 local CompletionItemKind = types.CompletionItemKind
 
@@ -6,8 +5,8 @@ local CompletionItemKind = types.CompletionItemKind
 ---@param done fun(result: CompletionList[])
 local handler = function(params, done)
 
-  local cursor_position = helpers.get_cursor_position()
-  local cmd_string = string.format("nu --ide-complete %d %s", cursor_position, params.bufname)
+  local cursor_position = params.col
+  local cmd_string = string.format("/usr/bin/env nu --ide-complete %d %s", cursor_position, params.bufname)
 
   local raw_nu_result = vim.fn.system(cmd_string)
   local nu_completions = vim.fn.json_decode(raw_nu_result).completions
