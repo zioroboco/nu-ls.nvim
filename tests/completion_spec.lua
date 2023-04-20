@@ -136,3 +136,29 @@ describe("the cursor in a position following a multibyte codepoint", function()
     end
   end)
 end)
+
+describe("the cursor following '$nu.'", function()
+  ---@type Params
+  local params = {
+    bufname = "./tests/fixtures/variables.nu",
+    row = 2,
+    col = 16,
+  }
+
+  local completion_items
+  local done = spy.new(function(result)
+    completion_items = result[1]["items"]
+  end)
+
+  ---@diagnostic disable-next-line
+  handler(params, done)
+
+  it("returns expected properties", function()
+    local expected = {"config-path", "current-exe", "default-config-dir", "env-path", "history-path", "home-path", "is-interactive", "is-login", "loginshell-path", "os-info", "pid", "scope", "startup-time", "temp-path"}
+    for _, command in ipairs(expected) do
+      assert.truthy(any(function(item)
+        return item.label == command
+      end, completion_items))
+    end
+  end)
+end)
