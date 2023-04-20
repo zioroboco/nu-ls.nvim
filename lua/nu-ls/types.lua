@@ -1,5 +1,33 @@
+-- nushell diagnostic result (afaik) {{{
+
+---@class NuDiagnostic
+---@field message string
+---@field severity "Error"|"Warning"|"Info"|"Hint"
+---@field span { start: number, end: number }
+---@field type "diagnostic"
+
+-- }}}
+
+-- null-ls diagnostic return type {{{
+--  see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/MAIN.md#diagnostics
+
+---@class Diagnostic
+---@field row number optional (defaults to first line)
+---@field col number optional (defaults to beginning of line)
+---@field end_row number optional (defaults to row)
+---@field end_col number optional (defaults to end of line),
+---@field source string optional (defaults to "null-ls")
+---@field code number optional
+---@field message string
+---@field severity 1|2|3|4 1 (error), 2 (warning), 3 (information), 4 (hint)
+---@field filename string optional (requires generator.multiple_files)
+---@field bufnr number optional (requires generator.multiple_files)
+
+-- }}}
+
 -- null-ls params for a completion provider (approx.) {{{
 --   see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/MAIN.md#params
+
 ---@class Params
 ---@field client_id number null-ls client id
 ---@field lsp_method string LSP method that triggered request / notification
@@ -14,10 +42,12 @@
 ---@field filetype string current buffer's filetype
 ---@field root string current buffer's root directory
 ---@field word_to_complete string keyword under cursor
+
 -- }}}
 
 -- language server protocol completion list type (approx.) {{{
 --   see: https://microsoft.github.io/language-server-protocol/specifications/specification-current
+
 ---@class CompletionList
 ---@field isIncomplete boolean This list is not complete. Further typing should result in recomputing this list.
 ---@field itemDefaults table A table containing default values for completion items.
@@ -59,10 +89,12 @@
 ---@alias LSPAny any
 ---@alias TextEdit any
 ---@alias InsertReplaceEdit any
+
 -- }}}
 
 -- language server protocol completion type enum {{{
 ---@enum CompletionItemKind
+
 local CompletionItemKind = {
     Text = 1,
     Method = 2,
@@ -90,6 +122,7 @@ local CompletionItemKind = {
     Operator = 24,
     TypeParameter = 25,
 }
+
 -- }}}
 
 return {

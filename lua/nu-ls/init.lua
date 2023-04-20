@@ -3,6 +3,12 @@ local null_ls = require("null-ls")
 ---@param params Params
 local handler = function(params, done)
 
+  -- diagnostics run from the filesystem, so we can skip the temp file stuff
+  if params.method == null_ls.methods.DIAGNOSTICS_ON_OPEN or params.method == null_ls.methods.DIAGNOSTICS_ON_SAVE then
+    require("nu-ls.handlers.diagnostics").handler(params, done)
+    return
+  end
+
   -- we can't read the data from stdin (nu is expecting a file path), but we
   -- also don't want to have to write our modified bufer to disk (to provide
   -- up-to-date cursor positions, etc.), so we're writing a copy of the current
@@ -30,6 +36,8 @@ return {
   filetypes = { "nu" },
   method = {
     null_ls.methods.COMPLETION,
+    null_ls.methods.DIAGNOSTICS_ON_OPEN,
+    null_ls.methods.DIAGNOSTICS_ON_SAVE,
     null_ls.methods.HOVER,
   },
   generator = {
