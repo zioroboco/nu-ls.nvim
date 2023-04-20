@@ -19,13 +19,18 @@ local handler = function(params, done)
     require("nu-ls.handlers.completion").handler(params, cleanup_and_done)
   end
 
+  if params.method == null_ls.methods.HOVER then
+    require("nu-ls.handlers.hover").handler(params, cleanup_and_done)
+  end
+
 end
 
 return {
   name = "nu-ls",
   filetypes = { "nu" },
   method = {
-    null_ls.methods.COMPLETION
+    null_ls.methods.COMPLETION,
+    null_ls.methods.HOVER,
   },
   generator = {
     async = true,
