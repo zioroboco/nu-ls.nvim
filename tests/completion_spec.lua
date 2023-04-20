@@ -101,3 +101,38 @@ describe("the cursor on the first character of the second line of a two-line fil
     end
   end)
 end)
+
+describe("the cursor in a position following a multibyte codepoint", function()
+  ---@type Params
+  local params = {
+    bufname = "./tests/fixtures/multibyte.nu",
+    row = 2,
+    col = 1,
+  }
+
+  local completion_items
+  local done = spy.new(function(result)
+    completion_items = result[1]["items"]
+  end)
+
+  ---@diagnostic disable-next-line
+  handler(params, done)
+
+  it("returns nushell commands starting with that character", function()
+    local commands_starting_with_l = { "ls", "let", "last", "loop", "lines", "length", "let-env", "load-env" }
+    for _, command in ipairs(commands_starting_with_l) do
+      assert.truthy(any(function(item)
+        return item.label == command
+      end, completion_items))
+    end
+  end)
+
+  it("doesn't return nushell commands starting with other characters", function()
+    local commands_not_starting_with_l = { "help", "def" }
+    for _, command in ipairs(commands_not_starting_with_l) do
+      assert.falsy(any(function(item)
+        return item.label == command
+      end, completion_items))
+    end
+  end)
+end)
