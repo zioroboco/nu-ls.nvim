@@ -1,12 +1,12 @@
 local any = require("fun").any
 
-local handler = require("nu-ls.completion").handler
+local handler = require("nu-ls.handlers.completion").handler
 local spy = require("luassert.spy")
 
 describe("an empty script", function()
   ---@type Params
   local params = {
-    bufname = "./tests/fixtures/blank.nu",
+    bufname = "./tests/completion/fixtures/blank.nu",
     row = 1,
     col = 0,
   }
@@ -36,7 +36,7 @@ end)
 describe("the cursor on the first character of a one-line file", function()
   ---@type Params
   local params = {
-    bufname = "./tests/fixtures/one-line.nu",
+    bufname = "./tests/completion/fixtures/one-line.nu",
     row = 1,
     col = 1,
   }
@@ -70,7 +70,7 @@ end)
 describe("the cursor on the first character of the second line of a two-line file", function()
   ---@type Params
   local params = {
-    bufname = "./tests/fixtures/two-lines.nu",
+    bufname = "./tests/completion/fixtures/two-lines.nu",
     row = 2,
     col = 1,
   }
@@ -105,7 +105,7 @@ end)
 describe("the cursor in a position following a multibyte codepoint", function()
   ---@type Params
   local params = {
-    bufname = "./tests/fixtures/multibyte.nu",
+    bufname = "./tests/completion/fixtures/multibyte.nu",
     row = 2,
     col = 1,
   }
@@ -140,7 +140,7 @@ end)
 describe("the cursor following '$nu.'", function()
   ---@type Params
   local params = {
-    bufname = "./tests/fixtures/variables.nu",
+    bufname = "./tests/completion/fixtures/variables.nu",
     row = 2,
     col = 16,
   }

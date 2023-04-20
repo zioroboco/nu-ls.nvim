@@ -3,7 +3,7 @@ local null_ls = require("null-ls")
 ---@param params Params
 local handler = function(params, done)
   if params.method == null_ls.methods.COMPLETION then
-    require("nu-ls.completion").handler(params, done)
+    require("nu-ls.handlers.completion").handler(params, done)
   end
 end
 
