@@ -9,7 +9,8 @@ local handler = function(params, done)
   local cmd_string = string.format("/usr/bin/env nu --ide-check %d %s", cursor_position, params.bufname)
   local raw_nu_result = vim.fn.system(cmd_string)
 
-  if raw_nu_result == "" then
+  -- reject responses from nu which are too short to be useful
+  if raw_nu_result == "" or string.len(raw_nu_result) <= 2 then
     return done({})
   end
 
