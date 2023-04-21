@@ -57,9 +57,9 @@ describe("diagnostics for a type mismatch in a command argument", function()
       source = "nu-ls",
 
       row = 3,
-      col = 8,
+      col = 9,
       end_row = 3,
-      end_col = 16,
+      end_col = 17,
     }
 
     assert.are_same({ expected }, diagnostic_result)
@@ -93,8 +93,8 @@ describe("diagnostics for a type mismatch (again)", function()
       filename = "./tests/diagnostics/fixtures/argument-mismatch-2.nu",
       message = "Type mismatch.",
       source = "nu-ls",
-      col = 11,
-      end_col = 17,
+      col = 12,
+      end_col = 18,
       end_row = 7,
       row = 7,
       severity = 1,
