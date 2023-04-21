@@ -1,35 +1,25 @@
 local from_absolute_position = require("nu-ls.common").from_absolute_position
 local to_absolute_position   = require("nu-ls.common").to_absolute_position
 
----@param params Params
----@param done fun(result: Diagnostic[])
-local handler = function(params, done)
+---@param line string A single line of output from `nu --ide-check ...`
+---@param params Params The null-ls params table
+---@return Diagnostic | nil
+local parse_line = function(line, params)
 
-  local cursor_position = to_absolute_position(params.row, params.col, params.bufname)
-  local cmd_string = string.format("/usr/bin/env nu --ide-check %d %s", cursor_position, params.bufname)
-  local raw_nu_result = vim.fn.system(cmd_string)
-
-  -- reject responses from nu which are too short to be useful
-  if raw_nu_result == "" or string.len(raw_nu_result) <= 2 then
-    return done({})
+  if line == "" then
+    return nil
   end
 
   ---@type NuDiagnostic | nil
-  local nu_diagnostic = vim.fn.json_decode(raw_nu_result)
+  local nu_diagnostic = vim.fn.json_decode(line)
 
-  if nu_diagnostic == nil or nu_diagnostic.message == nil or nu_diagnostic.span == nil then
-    return done({})
-  end
-
-  if not nu_diagnostic then
-    error("Could not decode nu diagnostic result: " .. raw_nu_result)
+  if nu_diagnostic == nil or nu_diagnostic.type ~= "diagnostic" then
+    return nil
   end
 
   ---@type 1|2|3|4
   local severity = 1
-  if nu_diagnostic.severity == "Error" then
-    severity = 1
-  elseif nu_diagnostic.severity == "Warning" then
+  if nu_diagnostic.severity == "Warning" then
     severity = 2
   elseif nu_diagnostic.severity == "Information" then
     severity = 3
@@ -55,9 +45,29 @@ local handler = function(params, done)
     source = "nu-ls",
   }
 
-  done({
-    diagnostic,
-  })
+  return diagnostic
+end
+
+---@param params Params
+---@param done fun(result: Diagnostic[])
+local handler = function(params, done)
+
+  local cursor_position = to_absolute_position(params.row, params.col, params.bufname)
+  local cmd_string = string.format("/usr/bin/env nu --ide-check %d %s", cursor_position, params.bufname)
+  local raw_nu_result = vim.fn.system(cmd_string)
+
+  local raw_nu_result_lines = vim.split(raw_nu_result, "\n")
+
+  ---@type Diagnostic[]
+  local diagnostics = {}
+  for _, line in ipairs(raw_nu_result_lines) do
+    local diagnostic = parse_line(line, params)
+    if diagnostic ~= nil then
+      table.insert(diagnostics, diagnostic)
+    end
+  end
+
+  done(diagnostics)
 
 end
 
