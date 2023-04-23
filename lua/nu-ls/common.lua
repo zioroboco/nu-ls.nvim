@@ -18,7 +18,7 @@ end
 ---@return { row: number, col: number } rv A table with the row and column of the cursor
 local from_absolute_position = function(pos, path)
   local cmd_string = string.format([[
-    awk -v pos=%d 'BEGIN { chars = 0 } { chars += length($0) + 1; if (chars >= pos) { print "{\"row\":", NR, ",\"col\":", (pos - (chars - length($0) - 1)) "}"; exit } }' %s
+    awk -v pos=%d 'BEGIN { chars = 0 } { chars += length($0) + 1; if (chars >= pos) { print "{\"row\":", NR, ",\"col\":", (pos - (chars - length($0))) + 2 "}"; exit } }' %s
   ]], pos, path)
 
   local decoded_result = vim.fn.json_decode(vim.fn.system(cmd_string))
