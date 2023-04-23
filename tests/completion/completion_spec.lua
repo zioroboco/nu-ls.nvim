@@ -1,7 +1,15 @@
-local any = require("fun").any
-
 local handler = require("nu-ls.handlers.completion").handler
 local spy = require("luassert.spy")
+
+-- returns true if any element of t satisfies f
+local any = function(f, t)
+  for _, v in ipairs(t) do
+    if f(v) then
+      return true
+    end
+  end
+  return false
+end
 
 describe("an empty script", function()
   ---@type Params
