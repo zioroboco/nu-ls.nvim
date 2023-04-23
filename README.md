@@ -9,4 +9,12 @@ require("null-ls").setup({
     -- ...
   },
 })
+
+-- The source attaches to buffers with the `nu` filetype, so this will apply
+-- that filetype to anything with a `.nu` extension:
+vim.filetype.add({
+  extension = {
+    nu = "nu",
+  },
+})
 ```
