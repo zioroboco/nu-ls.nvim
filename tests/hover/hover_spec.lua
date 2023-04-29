@@ -25,3 +25,21 @@ describe("hovering a simple variable", function()
     assert.are_same(hover_lines, { "string" })
   end)
 end)
+
+describe("hovering a broken command", function()
+  ---@type Params
+  local params = {
+    bufname = "./tests/hover/fixtures/broken.nu",
+    row = 1,
+    col = 6,
+  }
+
+  it("returns successfully (i.e. doesn't blow up)", function()
+    local done = spy.new(function() end)
+
+    ---@diagnostic disable-next-line
+    handler(params, done)
+
+    assert.spy(done).was.called(1)
+  end)
+end)

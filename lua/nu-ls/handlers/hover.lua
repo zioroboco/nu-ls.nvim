@@ -8,14 +8,16 @@ local handler = function(params, done)
   local cmd_string = string.format("/usr/bin/env nu --ide-hover %d %s", cursor_position, params.bufname)
 
   local raw_nu_result = vim.fn.system(cmd_string)
-  local nu_hover = vim.fn.json_decode(raw_nu_result).hover
 
-  local hover_lines = {}
-  for line in string.gmatch(nu_hover, "[^\n]+") do
-    table.insert(hover_lines, line)
+  if raw_nu_result ~= "" then
+    local decoded_nu_result = vim.fn.json_decode(raw_nu_result)
+    if decoded_nu_result then
+      return done(vim.split(decoded_nu_result.hover or "", "\n"))
+    end
   end
 
-  done(hover_lines)
+  vim.api.nvim_echo({{ "No hover information available", "WarningMsg" }}, true, {})
+  return done({})
 
 end
 
