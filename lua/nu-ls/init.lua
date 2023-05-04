@@ -1,5 +1,8 @@
 local null_ls = require("null-ls")
 
+-- global debounce timer for completions
+_G.nu_completion_debounce_timer = vim.loop.new_timer()
+
 ---@param params Params
 local handler = function(params, done)
 
@@ -22,7 +25,12 @@ local handler = function(params, done)
   end
 
   if params.method == null_ls.methods.COMPLETION then
-    require("nu-ls.handlers.completion").handler(params, cleanup_and_done)
+    if _G.nu_completion_debounce_timer:is_active() then
+      _G.nu_completion_debounce_timer:stop()
+    end
+    _G.nu_completion_debounce_timer:start(250, 0, vim.schedule_wrap(function()
+      require("nu-ls.handlers.completion").handler(params, cleanup_and_done)
+    end))
   end
 
   if params.method == null_ls.methods.HOVER then
