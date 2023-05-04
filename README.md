@@ -72,7 +72,7 @@ In addition, you can also set the filetype by reading shebangs, which might be u
 -- see `:h vim.filetype.add()`
 vim.filetype.add({
   pattern = {
-    ["*"] = {
+    [".*"] = {
       priority = -math.huge,
       function(path, bufnr)
         local content = vim.filetype.getlines(bufnr, 1)
