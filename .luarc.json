@@ -1,5 +1,6 @@
 {
   "workspace.library": [
+    "../../../.local/share/nvim/site/pack/packer/start/neodev.nvim/types/stable",
     "${3rd}/busted/library",
     "${3rd}/luassert/library",
     "../../jose-elias-alvarez/null-ls.nvim/lua/null-ls",

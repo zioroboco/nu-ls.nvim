@@ -1,5 +1,10 @@
 local null_ls = require("null-ls")
 
+local debounce_timer = vim.loop.new_timer()
+if debounce_timer == nil then
+  error("Failed to create timer")
+end
+
 ---@param params Params
 local handler = function(params, done)
 
@@ -22,7 +27,12 @@ local handler = function(params, done)
   end
 
   if params.method == null_ls.methods.COMPLETION then
-    require("nu-ls.handlers.completion").handler(params, cleanup_and_done)
+    if debounce_timer:is_active() then
+      debounce_timer:stop()
+    end
+    debounce_timer:start(250, 0, vim.schedule_wrap(function()
+      require("nu-ls.handlers.completion").handler(params, cleanup_and_done)
+    end))
   end
 
   if params.method == null_ls.methods.HOVER then
