@@ -49,6 +49,7 @@ require("nu-ls").setup({
   debounce = 250, -- delay after last input before requesting completions (ms)
 })
 
+-- register nu-ls as a null-ls source (required)
 require("null-ls").setup({
   sources = {
     require("nu-ls"),
