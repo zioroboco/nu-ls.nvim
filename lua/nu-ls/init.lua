@@ -2,7 +2,7 @@ local null_ls = require("null-ls")
 
 ---@class Options
 ---@field debounce number Delay after last input before generating completions, in milliseconds (default: 250ms)
-Options = {
+local options = {
   debounce = 250,
 }
 
@@ -36,7 +36,7 @@ local handler = function(params, done)
     if debounce_timer:is_active() then
       debounce_timer:stop()
     end
-    debounce_timer:start(Options.debounce, 0, vim.schedule_wrap(function()
+    debounce_timer:start(options.debounce, 0, vim.schedule_wrap(function()
       require("nu-ls.handlers.completion").handler(params, cleanup_and_done)
     end))
   end
@@ -50,7 +50,7 @@ end
 ---@param opts Options
 local function setup(opts)
   if opts and opts.debounce then
-    Options.debounce = opts.debounce
+    options.debounce = opts.debounce
   end
 end
 
