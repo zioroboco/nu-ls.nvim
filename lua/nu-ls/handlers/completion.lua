@@ -10,11 +10,20 @@ local handler = function(params, done)
   local cursor_position = to_absolute_position(params.row, params.col, params.bufname)
   local cmd_string = string.format("/usr/bin/env nu --ide-complete %d %s", cursor_position, params.bufname)
 
-  local raw_nu_result = vim.fn.system(cmd_string)
-  local nu_completions = vim.fn.json_decode(raw_nu_result).completions
+  local cmd_status, nu_result = pcall(vim.fn.system, cmd_string)
+  if not cmd_status then
+    vim.api.nvim_err_writeln("nu-ls: error calling nu binary")
+    return done({})
+  end
+
+  local decode_status, decoded_nu_result = pcall(vim.fn.json_decode, nu_result)
+  if not decode_status or not decoded_nu_result or not decoded_nu_result.completions then
+    vim.api.nvim_err_writeln(string.format("nu-ls: unexpected response from nu binary:\n    %s", nu_result))
+    return done({})
+  end
 
   local items = {}
-  for _, completion in ipairs(nu_completions) do
+  for _, completion in ipairs(decoded_nu_result.completions) do
     table.insert(items, {
       label = completion,
       kind = CompletionItemKind.Text,
