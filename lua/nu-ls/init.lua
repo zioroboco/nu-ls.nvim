@@ -1,9 +1,9 @@
 local null_ls = require("null-ls")
 
 ---@class Options
----@field debounce number Delay after last input before generating completions, in milliseconds (default: 250ms)
+---@field debounce number Delay after last input before generating completions, in milliseconds (default: 100ms)
 local options = {
-  debounce = 250,
+  debounce = 100,
 }
 
 local debounce_timer = vim.loop.new_timer()

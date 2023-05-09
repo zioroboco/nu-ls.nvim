@@ -43,12 +43,6 @@ end)
 The `nu-ls` source can now be registered with `null-ls`:
 
 ```lua
-
--- nu-ls setup is optional (default values are below)
-require("nu-ls").setup({
-  debounce = 250, -- delay after last input before requesting completions (ms)
-})
-
 -- register nu-ls as a null-ls source (required)
 require("null-ls").setup({
   sources = {

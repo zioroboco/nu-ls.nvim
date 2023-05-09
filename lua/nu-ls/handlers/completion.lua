@@ -18,7 +18,9 @@ local handler = function(params, done)
 
   local decode_status, decoded_nu_result = pcall(vim.fn.json_decode, nu_result)
   if not decode_status or not decoded_nu_result or not decoded_nu_result.completions then
-    vim.api.nvim_err_writeln(string.format("nu-ls: unexpected response from nu binary:\n    %s", nu_result))
+    -- currently suppressing an error introduced by the debounce timer
+    -- tracking in: https://github.com/zioroboco/nu-ls.nvim/issues/10
+    -- vim.api.nvim_err_writeln(string.format("nu-ls: unexpected response from nu binary:\n    %s", nu_result))
     return done({})
   end
 
