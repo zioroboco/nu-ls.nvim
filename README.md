@@ -3,14 +3,12 @@
 
 A [null-ls.nvim](https://github.com/jose-elias-alvarez/null-ls.nvim) source providing language server features for the [nushell](https://www.nushell.sh/) language in [neovim](https://neovim.io/).
 
+Intended to provide an uncomplicated way to access nushell's language server features via the `nu --ide-*` flags added in [nushell v0.79](https://www.nushell.sh/blog/2023-04-25-nushell_0_79.html). It does not provide syntax highlighting or other features (see [nushell/tree-sitter-nu](github.com/nushell/tree-sitter-nu)), and not all language server methods are supported (e.g. go to definition, see [#2](https://github.com/zioroboco/nu-ls.nvim/issues/2)).
+
+Note that this project is unstable: releases are unversioned, and future updates will require backwards-incompatible changes to config.
+
 
 ## Installation
-
-This repo intends to do exactly one thing: to provide an uncomplicated way to access nushell's language server features via the `nu --ide-*` flags added in [nushell v0.79](https://www.nushell.sh/blog/2023-04-25-nushell_0_79.html).
-
-This isn't intended to be a complete, out-of-the-box nushell plugin for neovim, and some assembly is required. This is deliberate - nu moves fast, editor integrations come and go, and I'm in no better position than you to judge what might make for a good setup over time.
-
-That said, the instructions bellow might help you to set up a reasonably full-featured nushell development environment in neovim.
 
 
 ### Installing the `nu-ls.nvim` package
@@ -38,7 +36,7 @@ end)
 ```
 
 
-### Registering the null-ls source
+### Registering as a null-ls source
 
 The `nu-ls` source can now be registered with `null-ls`:
 
@@ -82,6 +80,28 @@ vim.filetype.add({
         end
       end,
     },
+  },
+})
+```
+
+
+## Troubleshooting
+
+### Poor completions performance
+
+It's been reported that completions can be slow, particularly on larger files. A workaround at the moment is to use the `setup` function to construct a custom null-ls source which doesn't include the completions method:
+
+```lua
+require("null-ls").setup({
+  sources = {
+    require("nu-ls").setup({
+      methods = {
+        "diagnostics_on_open",
+        "diagnostics_on_save",
+        "hover",
+      },
+    }),
+    -- ...
   },
 })
 ```

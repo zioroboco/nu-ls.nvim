@@ -1,9 +1,38 @@
 local null_ls = require("null-ls")
 
+-- Implemented null-ls method names, as described by :NullLsInfo
+---@alias MethodName "completion" | "diagnostics_on_open" | "diagnostics_on_save" | "hover"
+
 ---@class Options
 ---@field debounce number Delay after last input before generating completions, in milliseconds (default: 100ms)
+---@field methods MethodName[] Enabled null-ls methods (default: all)
 local options = {
+
+  -- FIXME: these are being accessed in different ways...
+  --   options.debounce is being looked up in this options table at runtime
+  --   options.method is required to be set upon registration with null-ls
+  --
+  -- So this is used to look up defaults, and directly as a config object.
+  --
+  -- I'm trying to prevent breaking past versions of the config API -- if we
+  -- need to keep using nu-ls long term, we'll want to fix this in a future
+  -- breaking (as in versioned) release, in which we stop using the nu-ls
+  -- module directly as the source, and require config to be provided first.
+
   debounce = 100,
+  methods = {
+    "completion",
+    "diagnostics_on_open",
+    "diagnostics_on_save",
+    "hover",
+  }
+}
+
+local enabled_internal_methods = {
+  null_ls.methods.COMPLETION,
+  null_ls.methods.DIAGNOSTICS_ON_OPEN,
+  null_ls.methods.DIAGNOSTICS_ON_SAVE,
+  null_ls.methods.HOVER,
 }
 
 local debounce_timer = vim.loop.new_timer()
@@ -49,23 +78,28 @@ end
 
 ---@param opts Options
 local function setup(opts)
-  if opts and opts.debounce then
-    options.debounce = opts.debounce
+  options = vim.tbl_extend("force", options, opts or {})
+  enabled_internal_methods = {}
+  for _, method in ipairs(options.methods) do
+    local internal_method_name = null_ls.methods[method:upper()]
+    if internal_method_name == nil then
+      error("nu-ls: invalid method name: " .. method)
+      return
+    end
+    table.insert(enabled_internal_methods, internal_method_name)
   end
+  return {
+    name = "nu-ls",
+    filetypes = { "nu" },
+    method = enabled_internal_methods,
+    generator = {
+      async = true,
+      fn = handler,
+    },
+  }
 end
 
-return {
-  name = "nu-ls",
-  filetypes = { "nu" },
-  method = {
-    null_ls.methods.COMPLETION,
-    null_ls.methods.DIAGNOSTICS_ON_OPEN,
-    null_ls.methods.DIAGNOSTICS_ON_SAVE,
-    null_ls.methods.HOVER,
-  },
-  generator = {
-    async = true,
-    fn = handler,
-  },
-  setup = setup,
-}
+local M = setup(options)
+M.setup = setup
+
+return M
