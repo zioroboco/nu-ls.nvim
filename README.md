@@ -87,15 +87,18 @@ vim.filetype.add({
 
 ## Troubleshooting
 
-### Poor completions performance
+### Completion performance
 
-It's been reported that completions can be slow, particularly on larger files. A workaround at the moment is to use the `setup` function to construct a custom null-ls source which doesn't include the completions method:
+Completions are a bit inefficient, and so are not generated until 500ms after the last input. To modify this, the `setup` function can be used to construct a custom null-ls source, with either a different debounce time or by removing `"completion"` from the list of enabled null-ls methods:
 
 ```lua
 require("null-ls").setup({
   sources = {
+    -- note: setup is optional, default values are below
     require("nu-ls").setup({
+      debounce = 500, -- completion debounce time in ms
       methods = {
+        "completion", -- remove to disable completions altogether
         "diagnostics_on_open",
         "diagnostics_on_save",
         "hover",

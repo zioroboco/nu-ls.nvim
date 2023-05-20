@@ -4,7 +4,7 @@ local null_ls = require("null-ls")
 ---@alias MethodName "completion" | "diagnostics_on_open" | "diagnostics_on_save" | "hover"
 
 ---@class Options
----@field debounce number Delay after last input before generating completions, in milliseconds (default: 100ms)
+---@field debounce number Delay after last input before generating completions, in milliseconds (default: 500ms)
 ---@field methods MethodName[] Enabled null-ls methods (default: all)
 local options = {
 
@@ -19,7 +19,7 @@ local options = {
   -- breaking (as in versioned) release, in which we stop using the nu-ls
   -- module directly as the source, and require config to be provided first.
 
-  debounce = 100,
+  debounce = 500,
   methods = {
     "completion",
     "diagnostics_on_open",
